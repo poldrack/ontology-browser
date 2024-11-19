@@ -1,0 +1,46 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Ontology Search</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1>Ontology Search</h1>
+        
+        <form method="get" class="mb-4">
+            <div class="row g-3">
+                <div class="col-sm-6">
+                    <div class="input-group">
+                        {{ form.query }}
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    {{ form.type_filter }}
+                </div>
+                <div class="col-sm-2">
+                    <button type="submit" class="btn btn-primary w-100">Search</button>
+                </div>
+            </div>
+        </form>
+
+        {% if form.is_bound %}
+            <h2>Results</h2>
+            {% if results %}
+                <div class="list-group">
+                {% for result in results %}
+                    <a href="{% url 'task_detail' result.custom_id %}" class="list-group-item list-group-item-action">
+                        <h5 class="mb-1">ID: {{ result.custom_id }}</h5>
+                        <p class="mb-1">{{ result.description }}</p>
+                        <small class="text-muted">Type: {{ result.type }}</small>
+                    </a>
+                {% endfor %}
+                </div>
+            {% else %}
+                <p>No results found.</p>
+            {% endif %}
+        {% endif %}
+    </div>
+</body>
+</html> 
