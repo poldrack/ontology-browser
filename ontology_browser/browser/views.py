@@ -1,14 +1,23 @@
 from django.shortcuts import render, redirect
-from django.http import JsonResponse
-from .mongodb_utils import get_ontology_collection, search_ontology, get_all_tasks, get_task_by_id, save_review
-from .forms import SearchForm, ReviewForm
+from django.http import Http404, JsonResponse
+from .forms import SearchForm, ReviewForm, ConceptSearchForm
+from .mongodb_utils import (
+    get_task_collection,
+    search_tasks,
+    get_task_by_id,
+    save_review,
+    get_all_tasks,
+    get_all_concepts,
+    search_concepts,
+    get_concept_by_id,
+    save_concept_review
+)
 
 # Create your views here.
 
 def test_connection(request):
     try:
-        collection = get_ontology_collection()
-        # Get the first document to test connection
+        collection = get_task_collection()
         doc = collection.find_one()
         return JsonResponse({
             'status': 'success',
@@ -29,7 +38,7 @@ def search_view(request):
     if form.is_valid():
         query = form.cleaned_data.get('query', '')
         type_filter = form.cleaned_data.get('type_filter', 'all')
-        results = search_ontology(query, type_filter)
+        results = search_tasks(query, type_filter)
     
     return render(request, 'browser/search.html', {
         'form': form,
@@ -70,3 +79,58 @@ def task_detail(request, task_id):
         'task': task,
         'review_form': form
     })
+
+def concept_list(request):
+    """View for listing all concepts"""
+    concepts = get_all_concepts()
+    return render(request, 'browser/concept_list.html', {
+        'concepts': concepts
+    })
+
+def concept_search(request):
+    """View for searching concepts"""
+    form = ConceptSearchForm(request.GET)
+    results = []
+    query = ''
+    
+    if form.is_valid():
+        query = form.cleaned_data.get('query', '')
+        results = search_concepts(query)
+    
+    return render(request, 'browser/concept_search.html', {
+        'form': form,
+        'results': results,
+        'query': query
+    })
+
+def concept_detail(request, concept_id):
+    """View for displaying concept details"""
+    concept = get_concept_by_id(concept_id)
+    if concept is None:
+        raise Http404("Concept not found")
+    
+    if request.method == 'POST':
+        form = ReviewForm(request.POST)
+        if form.is_valid():
+            save_concept_review(
+                concept_id,
+                form.cleaned_data['status'],
+                form.cleaned_data['comment']
+            )
+            return redirect('concept_detail', concept_id=concept_id)
+    else:
+        # Pre-fill form with existing review if it exists
+        initial_data = {
+            'status': concept.get('review_status', ''),
+            'comment': concept.get('review_comment', '')
+        }
+        form = ReviewForm(initial=initial_data)
+    
+    return render(request, 'browser/concept_detail.html', {
+        'concept': concept,
+        'review_form': form
+    })
+
+def home(request):
+    """View for the home page"""
+    return render(request, 'browser/home.html')

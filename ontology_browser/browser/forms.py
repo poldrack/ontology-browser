@@ -22,6 +22,16 @@ class SearchForm(forms.Form):
         })
     )
 
+class ConceptSearchForm(forms.Form):
+    query = forms.CharField(
+        max_length=100,
+        required=False,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Search concepts by ID or description...'
+        })
+    )
+
 class ReviewForm(forms.Form):
     status = forms.ChoiceField(
         choices=[

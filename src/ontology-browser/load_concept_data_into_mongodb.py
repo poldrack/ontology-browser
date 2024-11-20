@@ -14,6 +14,9 @@ def parse_jsonl_line(line):
     content = content.replace("```json", "").replace("```", "")
     content_dict = json.loads(content)
     assert content_dict['type'] != 'other', f"type is other for {json_data['custom_id']}"
+    content_dict['type'] = content_dict['type'].replace('construct-', '')
+    content_dict['type'] = content_dict['type'].replace('_', ' ')
+    content_dict['description'] = ''.join(content_dict['description'])
     content_dict['model'] = json_data['response']['body']['model']
     content_dict['custom_id'] = json_data['custom_id'].replace('task-','').replace('/','_')
     content_dict['system_fingerprint'] = json_data['response']['body']['system_fingerprint']

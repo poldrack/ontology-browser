@@ -13,12 +13,12 @@ def get_mongodb_collection(database_name, collection_name, connection_url='mongo
 
 
 
-def read_jsonl_file(jsonl_path):
+def read_jsonl_file(jsonl_path, parser):
     """Reads and parses JSONL file, yielding documents."""
     with open(jsonl_path, 'r') as file:
         for line in file:
             try:
-                parsed_entry = parse_jsonl_line(line)
+                parsed_entry = parser(line)
                 yield parsed_entry
             except Exception as e:
                 print(f"Error parsing line {line}: {e}")
@@ -49,9 +49,9 @@ def clear_collection(collection):
     print(f"Cleared {result.deleted_count} documents from {collection.full_name}")
 
 
-def load_jsonl_to_mongodb(jsonl_path, database_name, collection_name):
+def load_jsonl_to_mongodb(jsonl_path, database_name, collection_name, parser):
     """Coordinates the loading of JSONL data into MongoDB."""
     collection = get_mongodb_collection(database_name, collection_name)
     clear_collection(collection)  # Clear existing data
-    documents = read_jsonl_file(jsonl_path)
+    documents = read_jsonl_file(jsonl_path, parser)
     insert_documents(collection, documents)
