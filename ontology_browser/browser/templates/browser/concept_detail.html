@@ -20,6 +20,9 @@
             background-color: #f8d7da;
             color: #721c24;
         }
+        .list-item {
+            margin-bottom: 0.5rem;
+        }
     </style>
 </head>
 <body>
@@ -52,6 +55,14 @@
                         <div class="ms-3">
                             {% if key == 'custom_id' %}
                                 {{ value|format_id }}
+                            {% elif key in 'references,tasks' %}
+                                <ul class="list-unstyled">
+                                {% for item in value|format_list %}
+                                    <li class="list-item">• {{ item|format_id }}</li>
+                                {% empty %}
+                                    <li>No {{ key }} available</li>
+                                {% endfor %}
+                                </ul>
                             {% elif value|stringformat:"s"|length > 100 %}
                                 <pre class="text-wrap">{{ value|pprint }}</pre>
                             {% else %}
