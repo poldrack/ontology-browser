@@ -55,6 +55,8 @@
                         <div class="ms-3">
                             {% if key == 'custom_id' %}
                                 {{ value|format_id }}
+                            {% elif key == 'description' %}
+                                {{ value|format_description }}
                             {% elif key in 'references,tasks' %}
                                 <ul class="list-unstyled">
                                 {% for item in value|format_list %}

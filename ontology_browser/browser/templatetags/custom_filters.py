@@ -1,5 +1,6 @@
 from django import template
 import json
+import ast
 
 register = template.Library()
 
@@ -30,4 +31,28 @@ def format_list(value):
         return value
     
     # If it's neither, wrap it in a list
-    return [value] 
+    return [value]
+
+@register.filter
+def format_description(value):
+    """Format description by converting tuple/list of strings into a single string"""
+    if not value:
+        return ""
+    
+    # If it's already a string, return it
+    if isinstance(value, str):
+        return value
+    
+    # If it's a string representation of a tuple/list
+    if isinstance(value, str) and (value.startswith('(') or value.startswith('[')):
+        try:
+            # Try to safely evaluate the string as a literal
+            value = ast.literal_eval(value)
+        except:
+            return value
+
+    # If it's a tuple or list, join the elements
+    if isinstance(value, (tuple, list)):
+        return ' '.join(value)
+    
+    return str(value) 

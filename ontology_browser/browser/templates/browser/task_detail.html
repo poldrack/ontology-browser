@@ -55,12 +55,24 @@
                         <div class="ms-3">
                             {% if key == 'custom_id' %}
                                 {{ value|format_id }}
-                            {% elif key in 'references,constructs,conditions,disorders' %}
+                            {% elif key == 'description' %}
+                                {{ value|format_description }}
+                            {% elif key in 'references,conditions,disorders' %}
                                 <ul class="list-unstyled">
                                 {% for item in value|format_list %}
-                                    <li class="list-item">• {% if key == 'constructs' %}{{ item|format_id }}{% else %}{{ item }}{% endif %}</li>
+                                    <li class="list-item">• {{ item }}</li>
                                 {% empty %}
                                     <li>No {{ key }} available</li>
+                                {% endfor %}
+                                </ul>
+                            {% elif key == 'constructs' %}
+                                <ul class="list-unstyled">
+                                {% for item in value|format_list %}
+                                    <li class="list-item">
+                                        • <a href="{% url 'concept_search_by_id' concept_id=item %}">{{ item|format_id }}</a>
+                                    </li>
+                                {% empty %}
+                                    <li>No constructs available</li>
                                 {% endfor %}
                                 </ul>
                             {% elif value|stringformat:"s"|length > 100 %}

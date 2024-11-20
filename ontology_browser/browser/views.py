@@ -87,13 +87,17 @@ def concept_list(request):
         'concepts': concepts
     })
 
-def concept_search(request):
+def concept_search(request, concept_id=None):
     """View for searching concepts"""
     form = ConceptSearchForm(request.GET)
     results = []
     query = ''
     
-    if form.is_valid():
+    if concept_id:
+        # If searching by ID, use that as the query
+        query = concept_id
+        results = search_concepts(concept_id)
+    elif form.is_valid():
         query = form.cleaned_data.get('query', '')
         results = search_concepts(query)
     

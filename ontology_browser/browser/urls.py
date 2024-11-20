@@ -8,6 +8,7 @@ urlpatterns = [
     path('task/<str:task_id>/', views.task_detail, name='task_detail'),
     path('concepts/', views.concept_list, name='concept_list'),
     path('concepts/search/', views.concept_search, name='concept_search'),
+    path('concepts/search/<str:concept_id>/', views.concept_search, name='concept_search_by_id'),
     path('concept/<str:concept_id>/', views.concept_detail, name='concept_detail'),
     path('', views.home, name='home'),
 ]
