@@ -21,3 +21,22 @@ class SearchForm(forms.Form):
             'class': 'form-select'
         })
     )
+
+class ReviewForm(forms.Form):
+    status = forms.ChoiceField(
+        choices=[
+            ('accepted', 'Accepted'),
+            ('rejected', 'Rejected')
+        ],
+        widget=forms.RadioSelect(attrs={
+            'class': 'form-check-input'
+        })
+    )
+    comment = forms.CharField(
+        required=False,
+        widget=forms.Textarea(attrs={
+            'class': 'form-control',
+            'rows': 3,
+            'placeholder': 'Enter your review comments here...'
+        })
+    )

@@ -1,7 +1,7 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import JsonResponse
-from .mongodb_utils import get_ontology_collection, search_ontology, get_all_tasks, get_task_by_id
-from .forms import SearchForm
+from .mongodb_utils import get_ontology_collection, search_ontology, get_all_tasks, get_task_by_id, save_review
+from .forms import SearchForm, ReviewForm
 
 # Create your views here.
 
@@ -48,6 +48,25 @@ def task_detail(request, task_id):
     task = get_task_by_id(task_id)
     if task is None:
         raise Http404("Task not found")
+    
+    if request.method == 'POST':
+        form = ReviewForm(request.POST)
+        if form.is_valid():
+            save_review(
+                task_id,
+                form.cleaned_data['status'],
+                form.cleaned_data['comment']
+            )
+            return redirect('task_detail', task_id=task_id)
+    else:
+        # Pre-fill form with existing review if it exists
+        initial_data = {
+            'status': task.get('review_status', ''),
+            'comment': task.get('review_comment', '')
+        }
+        form = ReviewForm(initial=initial_data)
+    
     return render(request, 'browser/task_detail.html', {
-        'task': task
+        'task': task,
+        'review_form': form
     })
