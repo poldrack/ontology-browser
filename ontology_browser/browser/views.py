@@ -10,7 +10,8 @@ from .mongodb_utils import (
     get_all_concepts,
     search_concepts,
     get_concept_by_id,
-    save_concept_review
+    save_concept_review,
+    search_concepts_by_id
 )
 
 # Create your views here.
@@ -94,9 +95,9 @@ def concept_search(request, concept_id=None):
     query = ''
     
     if concept_id:
-        # If searching by ID, use that as the query
+        # If searching by ID, use exact match
+        results = search_concepts_by_id(concept_id)
         query = concept_id
-        results = search_concepts(concept_id)
     elif form.is_valid():
         query = form.cleaned_data.get('query', '')
         results = search_concepts(query)

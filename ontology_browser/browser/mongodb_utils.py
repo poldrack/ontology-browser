@@ -38,7 +38,7 @@ def search_tasks(query, type_filter=None):
     return list(collection.find(final_query))
 
 def search_concepts(query):
-    """Search ontology-concept collection"""
+    """Search concepts collection by query in custom_id or description"""
     collection = get_concept_collection()
     
     if query:
@@ -52,6 +52,11 @@ def search_concepts(query):
         search_query = {}
     
     return list(collection.find(search_query))
+
+def search_concepts_by_id(concept_id):
+    """Search concepts collection by exact custom_id match"""
+    collection = get_concept_collection()
+    return list(collection.find({'custom_id': concept_id}))
 
 def get_concept_by_id(concept_id):
     """Get a specific concept by its custom_id"""
